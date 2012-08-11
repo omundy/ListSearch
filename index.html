@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<title>ListSearch</title>
+<style type="text/css">
+body { font:0.85em/1.4em Arial, sans-serif; margin:20px; }
+h1 { font-size: 1.5em }
+.col { float:left; width:325px; margin:20px 10px 0 0; overflow:auto; }
+#queries { width:315px; height:200px; margin-top:10px; }
+#append { width:315px; height:100px; margin-top:10px; }
+.step { clear:both; }
+.text { padding:8px 0 0; } 
+a.tip { text-decoration:none; padding:1px; font-size:90% }
+.subcol { float:left; margin:0; width:70px; }
+.subcol input, .subcol select { margin:0 0 10px 0 }
+form { overflow:auto; }
+.section { clear:both; margin:40px 0; border-top:1px solid #ccc; padding:10px 0; }
+</style>
+
+<script type="text/javascript">
+
+function clean (str) {
+	var s = '';
+	var whitespace = '\n\r\t\f\x0b\xa0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000\u2022';
+	for (var i = 0; i < str.length; i++) {
+		if (whitespace.indexOf(str.charAt(i)) == -1) {
+			s += str.charAt(i);
+		}
+	}
+	s = s.replace(/^\s+|\s+$/g, '').replace(/\s+/g, '+'); // trim and remove doublespaces
+	return s;
+}
+function list_search(){
+	var url;
+	var query = document.forms["searchform"]["queries"].value;
+	var append = document.forms["searchform"]["append"].value;
+	var service = document.forms["searchform"]["service"].value;
+	
+	if (query.length > 0){
+		var query_arr = query.split('\n');
+		for (i = 0; i < query_arr.length; i++){
+			
+			switch(service)
+			{	
+				case "aol_web":			url = 'http://search.aol.com/aol/search?q='; break;
+				case "aol_images":		url = 'http://search.aol.com/aol/image?q='; break;
+				case "aol_video":		url = 'http://search.aol.com/aol/video?q='; break;
+				case "aol_network":		url = 'http://search.aol.com/aol/network?q='; break;
+				case "aol_news":		url = 'http://search.aol.com/aol/news?q='; break;
+				case "aol_shopping":	url = 'http://aolsearch.pgpartner.com/search.php/form_keyword='; break;
+				case "aol_autos":		url = 'http://autos.search.aol.com/search?q='; break;
+				
+				case "ask_web":			url = 'http://www.ask.com/web?q='; break;
+				case "ask_image":		url = 'http://www.ask.com/pictures?q='; break;
+				case "ask_news":		url = 'http://www.ask.com/news?q='; break;
+				case "ask_video":		url = 'http://www.ask.com/videos?q='; break;
+				case "ask_reference":	url = 'http://www.ask.com/ref?q='; break;
+				case "ask_shopping":	url = 'http://www.ask.com/shopping?q='; break;
+				
+				case "bing_web":		url = 'http://www.bing.com/search?q='; break;
+				case "bing_image":		url = 'http://www.bing.com/images/search?q='; break;
+				case "bing_video":		url = 'http://www.bing.com/videos/search?q='; break;
+				case "bing_maps":		url = 'http://www.bing.com/maps/default.aspx?q='; break;
+				case "bing_news":		url = 'http://www.bing.com/news/search?q='; break;
+				case "bing_shopping":	url = 'http://www.bing.com/shopping/?q='; break;
+				
+				case "google_web":		url = 'https://www.google.com/search?q='; break;
+				case "google_image":	url = 'https://www.google.com/search?tbm=isch&q='; break;
+				case "google_video":	url = 'https://www.google.com/search?tbm=vid&q='; break;
+				case "google_map":		url = 'http://maps.google.com/maps?q='; break;
+				case "google_news":		url = 'https://www.google.com/search?tbm=nws&q='; break;
+				case "google_shopping":	url = 'https://www.google.com/search?tbm=shop&q='; break;
+				
+				case "yahoo_web":		url = 'http://search.yahoo.com/search?p='; break;
+				case "yahoo_images":	url = 'http://images.search.yahoo.com/search/images?p='; break;
+				case "yahoo_video":		url = 'http://video.search.yahoo.com/search/video?p='; break;
+				case "yahoo_shopping":	url = 'http://shopping.yahoo.com/search?p='; break;
+				case "yahoo_news":		url = 'http://news.search.yahoo.com/search/news?p='; break;
+				case "yahoo_recipes":	url = 'http://recipes.search.yahoo.com/search?p='; break;
+				case "yahoo_omg":		url = 'http://omg.search.yahoo.com/search?p='; break;
+				
+				default: 				url = 'https://www.google.com/search?q='; break;
+			}
+			
+			url = url + clean(query_arr[i]);
+			
+			if (append.length > 0){
+				var append_arr = append.replace(/\n/ig,'+');
+				url = url + '+' + clean(append_arr);
+			}
+			if (service.search(/^google/ig) > -1){
+				if (document.forms["searchform"]["ignore_personal"].checked == true){
+					url = url + "&pws=0";
+				}
+			}
+			if (service.search(/image/ig) > -1){
+				if (document.forms["searchform"]["safesearch"].value == "off"){
+					url = url + "&safe=on";
+				} else if (document.forms["searchform"]["safesearch"].value == "moderate") {
+					url = url + "&safe=moderate";
+				} else {
+					url = url + "&safe=on";
+				}
+			}
+			window.open(url)
+		}
+	} else {
+		alert("You must enter search term(s) first");
+	}
+	return false;
+}
+
+</script>
+</head>
+<body>
+
+<h1>ListSearch</h1>
+<p>Perform multiple search engine queries from a list with one click. View the code <a href="https://github.com/omundy/ListSearch">here</a>.</p>
+
+
+
+<form name="searchform">
+	
+	<div class="step">
+		<div class="col"><textarea id="queries"></textarea></div>
+		<div class="col text">1. Copy and paste queries as new lines <a href="#" title="Add new lines with shift + return (enter on Mac)" class="tip" onClick="alert('Add new lines with shift + return (enter on Mac)')">[?]</a></div>
+	</div>
+	
+	<div class="step">
+		<div class="col"><textarea id="append"></textarea></div>
+		<div class="col text">2. Append these terms to each item in the list</div>
+	</div>
+	
+	<div class="step">
+		<div class="col">
+			<div class="subcol">Options:</div>
+			<div class="subcol" style="width:230px;">
+				<input type="checkbox" name="ignore_personal" checked /> Hide personal results <a href="#" title="Works with google only" class="tip" onClick="alert('Works with google only')">[?]</a><br>
+				Safe search <select name="safesearch" id="safesearch">
+					<option value="on">on</option>
+					<option value="moderate" selected>moderate</option>
+					<option value="off">off</option>
+				</select> <a href="#" title="Applies to image searches only" class="tip" onClick="alert('Applies to image searches only')">[?]</a>
+			</div>
+		</div>
+		<div class="col">
+			3. 
+			<select name="service" id="service">
+				
+				<option value="aol_web">AOL Web</option>
+				<option value="aol_images">AOL Images</option>
+				<option value="aol_video">AOL Video</option>
+				<option value="aol_network">AOL Network</option>
+				<option value="aol_news">AOL News</option>
+				<option value="aol_shopping">AOL Shopping</option>
+				<option value="aol_autos">AOL Autos</option>
+				
+				<option value="ask_web">Ask Web</option>
+				<option value="ask_image">Ask Image</option>
+				<option value="ask_news">Ask News</option>
+				<option value="ask_video">Ask Video</option>
+				<option value="ask_reference">Ask Reference</option>
+				<option value="ask_shopping">Ask Shopping</option>
+				
+				<option value="bing_web">Bing Web</option>
+				<option value="bing_image">Bing Image</option>
+				<option value="bing_video">Bing Video</option>
+				<option value="bing_maps">Bing Maps</option>
+				<option value="bing_news">Bing News</option>
+				<option value="bing_shopping">Bing Shopping</option>
+				
+				<option value="google_web" selected>Google Web</option>
+				<option value="google_image">Google image</option>
+				<option value="google_video">Google video</option>
+				<option value="google_web">Google web</option>
+				<option value="google_news">Google news</option>
+				<option value="google_shopping">Google shopping</option>
+				
+				<option value="yahoo_web">Yahoo Web</option>
+				<option value="yahoo_images">Yahoo Images</option>
+				<option value="yahoo_video">Yahoo Video</option>
+				<option value="yahoo_shopping">Yahoo Shopping</option>
+				<option value="yahoo_news">Yahoo News</option>
+				<option value="yahoo_recipes">Yahoo Recipes</option>
+				<option value="yahoo_omg">Yahoo OMG!</option>
+				
+			</select>
+			<input type="button" value="Search" onClick="list_search()" />
+		</div>
+	</div>
+	
+</form>
+
+
+<div class="section">Copyright (c) 2012 Owen Mundy owenmundy.com</div>
+	
+
+<script type="text/javascript" src="../assets/js/stats.js"></script>
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+</body>
+</html>
