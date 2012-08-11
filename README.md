@@ -2,7 +2,7 @@
 README for ListSearch
 -------
 
-PaletteVisualizer by Owen Mundy owenmundy.com
+ListSearch by Owen Mundy owenmundy.com
 
 
 Description
